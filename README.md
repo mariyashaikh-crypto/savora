@@ -7,11 +7,12 @@ Savora AI is an AI-powered web application designed to help restaurants reduce f
 🌍 Savora Optiserve — Connects hotels with nearby NGOs for food donation
 🧠 AI Insights — Smart recommendations for waste reduction
 🎯 Impact Simulator — Visualizes potential savings and social impact
+
 🎥 Demo Video
 Watch here:()
 
 🌐 Live Demo
-
+Link:(https://savora-1143.vercel.app/)
 
 🛠️ Tech Stack
 Frontend: HTML, CSS, JavaScript
