@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engine | SAVORA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        #particles-js { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="moving-gradient-bg" id="global-bg" style="z-index: -2;"></div>
+    <div id="canvas-container"></div>
+    
+    <!-- Global Navigation -->
+    <nav class="global-nav">
+        <div class="logo">
+            <svg class="logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/><path d="m15 9-6 6"/><path d="m9 9 2.5 2.5"/><path d="m15 15-2.5-2.5"/></svg>
+            <span class="neon-text">SAVORA</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Platform Overview</a>
+            <a href="/dashboard" class="active">Prediction Engine</a>
+            <a href="/data">Industry Insights</a>
+        </div>
+        <div class="dash-controls" style="display:flex; align-items:center; gap:15px; pointer-events:auto;">
+            <div class="sim-toggle-wrapper">
+                <label class="switch">
+                  <input type="checkbox" id="sim-toggle">
+                  <span class="slider round"></span>
+                </label>
+                <span class="sim-label">Simulation Mode</span>
+            </div>
+            
+            <select id="currency" class="currency-select">
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="INR">INR (₹)</option>
+            </select>
+            <button id="export-pdf-btn" class="toolbar-btn glow-hover" style="border-color:var(--neon-green); color:var(--neon-green);">Export PDF</button>
+        </div>
+    </nav>
+    
+    <!-- Physics Sub-toolbar Removed -->
+
+    <!-- Floating AI Chat Assistant -->
+    <div class="ai-chat-widget">
+        <button id="chat-toggle" class="chat-fab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
+        <div class="chat-window glass-card" id="chat-window" style="display:none;">
+            <div class="chat-header">SAVORA Copilot</div>
+            <div class="chat-body" id="chat-body">
+                <div class="msg ai">Hello! I'm analyzing your latest predictions. Ask me anything about scaling your inventory or interpreting the data.</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Ask SAVORA...">
+                <button id="chat-send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+            </div>
+        </div>
+    </div>
+
+    <main class="ui-layer" id="ui-layer">
+        
+        <header class="matter-panel ui-element" id="panel-header" data-width="600" data-height="120">
+            <h1>Restaurant Dashboard</h1>
+            <p>Complete Operations & Logistics</p>
+        </header>
+
+        <div class="dashboard-grid" id="main-export-area">
+            
+            <div class="column col-left">
+                <!-- 1. Condition Setup -->
+                <section class="glass-card matter-panel ui-element prediction-form" id="panel-form" data-width="360" data-height="520">
+                    <h2>Condition Setup</h2>
+                    <div class="input-group">
+                        <label for="rest_type">Restaurant Type</label>
+                        <select id="rest_type" style="border-color:var(--accent-secondary); margin-bottom: 5px;">
+                            <option>Casual Dining</option><option>Fine Dining</option><option>Fast Food</option><option>Cafe</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="day">Day of the Week</label>
+                        <select id="day">
+                            <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+                            <option>Thursday</option><option>Friday</option><option selected>Saturday</option><option>Sunday</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="weather">Weather Forecast</label>
+                        <select id="weather">
+                            <option selected>Clear</option><option>Cloudy</option><option>Rain</option><option>Snow</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group flex-group">
+                        <div class="sub-group">
+                            <label for="holiday">Holiday?</label>
+                            <select id="holiday">
+                                <option>No</option><option>Yes</option>
+                            </select>
+                        </div>
+                        <div class="sub-group">
+                            <label for="events">Events</label>
+                            <select id="events">
+                                <option selected>None</option><option>Festival</option><option>Sports</option><option>Concert</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="predict-btn" class="glow-btn">
+                        <span class="btn-text">Execute Model</span>
+                        <div class="btn-loader" style="display:none;"></div>
+                    </button>
+                </section>
+                
+                <!-- 5. Smart Inventory -->
+                <section class="glass-card matter-panel ui-element inventory-box glow-hover" id="panel-inventory" data-width="360" data-height="300">
+                    <h3 class="panel-subtitle">Smart Inventory Log</h3>
+                    <ul class="inventory-list" id="inventory-ul">
+                        <li class="inv-item"><span>Awaiting Model</span><span>-- kg</span></li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="column col-center">
+                <!-- 2. Result & Breakdown -->
+                <section class="glass-card matter-panel ui-element result-box glow-hover" id="panel-result" data-width="400" data-height="420">
+                    <!-- Alert Banner -->
+                    <div id="alert-banner" style="display:none;" class="alert-banner"></div>
+                    
+                    <div class="result-header">
+                        <h3>Projected Demand</h3>
+                        <div class="confidence-badge">Confidence <span id="confidence-val">--%</span></div>
+                    </div>
+                    <div class="progress-track"><div class="progress-bar" id="confidence-bar" style="width: 0%"></div></div>
+                    
+                    <div class="value-row">
+                        <div class="value-display counter" id="prediction-value">---</div>
+                        <div class="trend-indicator up" id="trend-box" style="display:none;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                            <span id="trend-val">--%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="breakdown-wrapper">
+                        <h4>Service Breakdown</h4>
+                        <div class="bld-bars">
+                            <div class="bld-item"><span class="lbl">BRK</span><div class="bg"><div class="fill f-b" id="bar-brk"></div></div><span class="pct" id="pct-brk">--%</span></div>
+                            <div class="bld-item"><span class="lbl">LUN</span><div class="bg"><div class="fill f-l" id="bar-lun"></div></div><span class="pct" id="pct-lun">--%</span></div>
+                            <div class="bld-item"><span class="lbl">DIN</span><div class="bg"><div class="fill f-d" id="bar-din"></div></div><span class="pct" id="pct-din">--%</span></div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 6. Prediction Factors -->
+                <section class="glass-card matter-panel ui-element factors-box glow-hover" id="panel-factors" data-width="400" data-height="330">
+                    <h3 class="panel-subtitle">Prediction Factors</h3>
+                    <div class="factors-list" id="factors-container">
+                        <p style="color:var(--text-dim);font-size:0.9rem;">Processing calculations...</p>
+                    </div>
+                </section>
+            </div>
+
+            <div class="column col-right">
+                <!-- 3. Impact Metrics -->
+                <section class="glass-card matter-panel ui-element impact-box" id="panel-impact" data-width="450" data-height="250">
+                    <h3 class="panel-subtitle">Simulation Impact</h3>
+                    <div class="metrics-grid">
+                        <div class="metric glow-hover">
+                            <div class="metric-icon-wrap" style="background: rgba(0, 255, 136, 0.1); border-color: rgba(0, 255, 136, 0.2);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon-green)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            </div>
+                            <div class="metric-data">
+                                <span class="metric-val counter" id="val-cost" data-currency="1">0</span><span class="currency-symbol" id="sym-cost">$</span>
+                                <span class="metric-lbl">Cost Saved</span>
+                            </div>
+                        </div>
+                        
+                        <div class="metric glow-hover">
+                            <div class="metric-icon-wrap" style="background: rgba(0, 240, 255, 0.1); border-color: rgba(0, 240, 255, 0.2);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                            </div>
+                            <div class="metric-data">
+                                <span class="metric-val counter highlight" id="val-eff">0</span><span class="highlight">%</span>
+                                <span class="metric-lbl">Efficiency</span>
+                            </div>
+                        </div>
+                        
+                        <div class="metric glow-hover">
+                            <div class="metric-icon-wrap" style="background: rgba(255, 0, 85, 0.1); border-color: rgba(255, 0, 85, 0.2);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff0055" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </div>
+                            <div class="metric-data">
+                                <span class="metric-val counter warning" id="val-waste">0</span><span class="warning">%</span>
+                                <span class="metric-lbl">Waste Drop</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. Chart Visualization -->
+                <section class="glass-card matter-panel ui-element chart-box glow-hover" id="panel-chart" data-width="450" data-height="500">
+                    <div class="chart-header">
+                        <h3 class="panel-subtitle">7-Day Future Projection</h3>
+                        <div class="chart-toggle">
+                            <span class="active">Forward View</span>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height:350px;">
+                        <canvas id="demandChart"></canvas>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        if(document.getElementById('particles-js')) {
+            particlesJS('particles-js', {
+                "particles": {
+                    "number": { "value": 150, "density": { "enable": true, "value_area": 800 } },
+                    "color": { "value": ["#00f0ff", "#ff0055", "#00ff88", "#7000ff"] },
+                    "shape": { "type": "circle" },
+                    "opacity": { "value": 0.8, "random": true, "anim": { "enable": true, "speed": 1.5, "opacity_min": 0.3, "sync": false } },
+                    "size": { "value": 4, "random": true },
+                    "line_linked": { "enable": true, "distance": 140, "color": "#00f0ff", "opacity": 0.5, "width": 1.5 },
+                    "move": { "enable": true, "speed": 1.5, "direction": "none", "random": true, "out_mode": "out" }
+                },
+                "interactivity": { "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": false } }, "modes": { "grab": { "distance": 220, "line_linked": { "opacity": 1 } } } },
+                "retina_detect": true
+            });
+        }
+    </script>
+</body>
+</html>
