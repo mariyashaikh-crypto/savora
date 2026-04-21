@@ -1,4 +1,4 @@
-🍽️ Savora — Food Demand & Waste Optimization Platform
+***##🍽️ Savora — Food Demand & Waste Optimization Platform##***
 
 Savora AI is an AI-powered web application designed to help restaurants reduce food wastage and optimize daily operations.
 It analyzes key inputs such as day, weather, and demand patterns to predict food requirements and provide actionable insights.
@@ -40,7 +40,9 @@ https://savora-1143.vercel.app/
 
 Category| Technologies Used
 💻 Frontend| HTML, CSS, JavaScript
+
 ⚙️ Backend| Python (Flask)
+
 🤖 Machine Learning| Scikit-learn
 
 ---
