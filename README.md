@@ -11,11 +11,11 @@ Savora AI is an AI-powered web application designed to help restaurants reduce f
 - 🎯 **Impact Simulator** — Visualizes potential savings and social impact  
 
 ## 🎥 Demo Video  
-Watch here:(https://youtu.be/hUx5_-soiz0)
+Watch here:(https://youtu.be/ACyShKPtVAQ)
 
 
 ## 🌐 Live Demo  
-https://savora-ai.onrender.com
+(https://savora-1143.vercel.app/)
 
 
 ## 🛠️ Tech Stack  
@@ -23,9 +23,6 @@ Frontend: HTML, CSS, JavaScript
 Backend: Python (Flask)  
 ML: Scikit-learn (fallback logic)
 
-
-## ⚠️ Note  
-Initial load may take a few seconds due to server cold start on free hosting.
 
 ## 👩‍💻 Developed By  
 Mariya Shaikh and Team
